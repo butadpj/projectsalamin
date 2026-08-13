@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="820" height="312" viewBox="0 0 1640 624">
+  <rect width="1640" height="624" fill="#000"/>
+  <image x="0" y="0" width="1640" height="624" xlink:href="salamin-cover-background-v1.png" preserveAspectRatio="xMidYMid slice"/>
+
+  <!-- Original Project SALAMIN logo, placed unchanged. -->
+  <image x="592.5" y="34" width="455" height="162" xlink:href="logo-black-bg-trasnparent.png" preserveAspectRatio="xMidYMid meet"/>
+
+  <g fill="#fff" text-anchor="middle" font-family="DIN Condensed, DIN Alternate, Arial Narrow, sans-serif" font-size="75" font-weight="700" letter-spacing="0.6">
+    <text x="820" y="310">KILATISIN ANG NAKIKITA.</text>
+    <text x="820" y="394">HANAPIN ANG PATUNAY.</text>
+    <text x="820" y="478">SURIIN ANG PINANINIWALAAN.</text>
+  </g>
+</svg>
