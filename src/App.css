@@ -632,28 +632,123 @@ button {
   font-weight: 650;
 }
 
-.reaction-panel {
-  position: sticky;
-  bottom: 12px;
-  z-index: 2;
-  margin: 12px;
-  padding: 19px;
-  background: rgb(255 255 255 / 97%);
-  border: 1px solid #d8dce2;
-  border-radius: 12px;
-  box-shadow: 0 12px 32px rgb(34 43 56 / 18%);
+.post-flow {
+  padding-bottom: 236px;
 }
 
-.reaction-panel p {
+.reaction-panel {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  left: 16px;
+  z-index: 10;
+  width: min(calc(100% - 32px), 680px);
+  margin: 0 auto;
+  padding: 16px;
+  background: rgb(255 255 255 / 98%);
+  border: 1px solid #ccd0d5;
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgb(34 43 56 / 24%);
+}
+
+.reaction-panel__inner {
+  display: grid;
+  grid-template-columns: minmax(150px, .75fr) minmax(320px, 1.5fr) auto;
+  align-items: end;
+  gap: 14px;
+}
+
+.reaction-panel__prompt p {
   margin: 0 0 3px;
   color: var(--fb-muted);
   font-size: 13px;
 }
 
-.reaction-panel h2 {
-  margin: 0 0 14px;
+.reaction-panel__prompt h2 {
+  margin: 0;
   font-size: 20px;
   letter-spacing: -.25px;
+}
+
+.reaction-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.reaction-option {
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 11px;
+  color: #2d3035;
+  font-size: 14px;
+  font-weight: 700;
+  background: #f0f2f5;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+
+.reaction-option:hover {
+  background: #e8f0ff;
+  border-color: #8eb5f5;
+}
+
+.reaction-option:active {
+  transform: scale(.985);
+}
+
+.reaction-option--selected {
+  color: #073b85;
+  background: #e7f0ff;
+  border-color: var(--fb-blue);
+}
+
+.radio-group-item {
+  width: 21px;
+  height: 21px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  padding: 0;
+  background: #fff;
+  border: 2px solid #8a8d91;
+  border-radius: 50%;
+}
+
+.radio-group-item[data-state='checked'] {
+  border-color: var(--fb-blue);
+}
+
+.radio-group-indicator {
+  display: grid;
+  place-items: center;
+}
+
+.radio-group-indicator span {
+  width: 11px;
+  height: 11px;
+  display: block;
+  background: var(--fb-blue);
+  border-radius: 50%;
+}
+
+.radio-group-item:focus-visible {
+  outline: 3px solid #72a7ff;
+  outline-offset: 3px;
+}
+
+.reaction-confirm {
+  min-width: 112px;
+  min-height: 48px;
+}
+
+.reaction-confirm:disabled {
+  color: #6c7075;
+  background: #e4e6eb;
 }
 
 .screen-enter {
@@ -802,7 +897,7 @@ button {
   line-height: 1.42;
 }
 
-.reveal-post__author mark {
+.reveal-post mark {
   padding: 2px 5px;
   color: #161719;
   background: #f1e675;
@@ -1567,20 +1662,51 @@ button {
   .post-actions span { font-size: 13px; }
 
   .reaction-panel {
-    bottom: 8px;
-    margin: 8px;
-    padding: 16px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 14px 14px calc(14px + env(safe-area-inset-bottom));
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+    border-radius: 14px 14px 0 0;
   }
 
-  .reaction-panel .choice-grid {
-    grid-template-columns: 1fr 1fr;
+  .post-flow {
+    padding-bottom: 300px;
   }
 
-  .reaction-panel .choice-grid button {
-    min-height: 45px;
-    padding: 8px;
-    font-size: 13px;
-    text-align: center;
+  .reaction-panel__inner {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .reaction-panel__prompt {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .reaction-panel__prompt p {
+    order: 2;
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  .reaction-panel__prompt h2 {
+    font-size: 18px;
+  }
+
+  .reaction-option {
+    min-height: 48px;
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .reaction-confirm {
+    width: 100%;
   }
 
   .reveal-header,

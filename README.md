@@ -39,8 +39,8 @@ The exercise also reminds participants not to rely on one post. They should sear
 The app currently combines two issue pairs:
 
 - Leni Robredo and Sara Duterte using the same presidential-candidacy claim
-- Marcos administration blamed for continuing flood-control failures
-- Duterte-allied senators blamed for continuing flood-control failures
+- Leni Robredo’s flood-control proposal attacked as vague and unfunded
+- Sara Duterte’s flood-control proposal attacked as vague and unfunded
 
 Every version uses the same page name, engagement counts, and Facebook-style layout. Each issue keeps its own comparison controlled.
 
@@ -52,8 +52,8 @@ The setup asks which side feels closer to the participant's current political po
 
 | Answer | Posts 1-2 | Posts 3-4 |
 | --- | --- | --- |
-| Leni Robredo | Leni candidacy, Duterte-allied senators blamed | Sara candidacy, Marcos administration blamed |
-| Sara Duterte | Sara candidacy, Marcos administration blamed | Leni candidacy, Duterte-allied senators blamed |
+| Leni Robredo | Leni candidacy, Sara’s flood-control proposal attacked | Sara candidacy, Leni’s flood-control proposal attacked |
+| Sara Duterte | Sara candidacy, Leni’s flood-control proposal attacked | Leni candidacy, Sara’s flood-control proposal attacked |
 
 ### Data and consent
 

@@ -21,8 +21,9 @@ import {
 import salaminLogo from '../assets/logo-white-bg-transparent.png'
 import leniCandidacyImage from '../assets/posts-2-sides/leni-vs-sara/Project SALAMIN - Brand & Post Assets (2).png'
 import saraCandidacyImage from '../assets/posts-2-sides/leni-vs-sara/Project SALAMIN - Brand & Post Assets (3).png'
-import saraFloodImage from '../assets/posts-2-sides/neutral-fc-vs-bbm-fc/Project SALAMIN - Brand & Post Assets (8).png'
-import bbmFloodImage from '../assets/posts-2-sides/neutral-fc-vs-bbm-fc/Project SALAMIN - Brand & Post Assets (9).png'
+import leniFloodImage from '../assets/posts-2-sides/leni-vs-sara/leni.jpg'
+import saraFloodImage from '../assets/posts-2-sides/leni-vs-sara/sara.jpg'
+import { RadioGroup, RadioGroupItem } from './components/ui/radio-group'
 import { submitSalaminResponse } from './salamin-api'
 import './App.css'
 
@@ -55,6 +56,7 @@ type PostVariant = {
   alt: string
   kicker: string
   headline: string
+  headlineHighlight?: string
 }
 
 type PostPair = {
@@ -105,25 +107,27 @@ const postPairs: Record<PairId, PostPair> = {
   'flood-control': {
     id: 'flood-control',
     title: 'Flood control',
-    caption: 'Bilyon ang budget pero baha pa rin. Sino ang dapat managot?',
-    revealNote: 'Pareho ang problema. Kampong sinisi ang pinalitan.',
+    caption: 'Baha na naman. Kaninong flood-control plan ang may malinaw na sagot?',
+    revealNote: 'Pareho ang puna. Politiko lang ang pinalitan.',
     variants: [
       {
         id: 'leni-frame',
         identity: 'Leni-aligned framing',
         image: saraFloodImage,
-        alt: 'Sara Duterte and officials inspecting a waterway',
-        kicker: 'DUTERTE-ALLIED SENATORS, SINISI',
-        headline: 'Duterte-allied senators blamed for the country’s continuing flood-control failures.',
+        alt: 'Sara Duterte speaking during an on-location interview',
+        kicker: 'PURO PANGAKO LANG?',
+        headline: 'Sara Duterte’s flood-control proposal called vague, unfunded, and impossible to execute.',
+        headlineHighlight: 'Sara Duterte’s',
       },
-      {
-        id: 'dds-frame',
-        identity: 'DDS-aligned framing',
-        image: bbmFloodImage,
-        alt: 'Ferdinand Marcos Jr. inspecting a flood-control site',
-        kicker: 'BBM ADMIN, SINISI',
-        headline: 'Marcos administration blamed for the country’s continuing flood-control failures.',
-      },
+    {
+      id: 'dds-frame',
+      identity: 'DDS-aligned framing',
+      image: leniFloodImage,
+      alt: 'Leni Robredo visiting a flooded building',
+      kicker: 'PURO PANGAKO LANG?',
+      headline: 'Robredo’s flood-control proposal called vague, unfunded, and impossible to execute.',
+      headlineHighlight: 'Robredo’s',
+    },
     ],
   },
 }
@@ -311,32 +315,77 @@ function ReactionPanel({
   onChoose: (reaction: Reaction) => void
 }) {
   const reactions: Reaction[] = ['believe', 'check', 'share', 'doubt']
+  const [selectedReaction, setSelectedReaction] = useState<Reaction | null>(null)
+
+  const confirmReaction = () => {
+    if (selectedReaction) onChoose(selectedReaction)
+  }
+
   return (
     <section className="reaction-panel" aria-labelledby="reaction-title">
-      <p>Post {number} sa {total}. {number === 1 ? 'Lumabas ito sa feed mo.' : 'May isa pang post.'}</p>
-      <h2 id="reaction-title">Ano ang una mong reaction?</h2>
-      <div className="choice-grid">
-        {reactions.map((reaction) => (
-          <button key={reaction} type="button" onClick={() => onChoose(reaction)}>
-            {reactionLabels[reaction]}
-          </button>
-        ))}
+      <div className="reaction-panel__inner">
+        <div className="reaction-panel__prompt">
+          <p>Post {number} sa {total}</p>
+          <h2 id="reaction-title">Ano ang una mong reaction?</h2>
+        </div>
+        <RadioGroup
+          aria-labelledby="reaction-title"
+          className="reaction-options"
+          value={selectedReaction ?? undefined}
+          onValueChange={(value) => setSelectedReaction(value as Reaction)}
+        >
+          {reactions.map((reaction) => (
+            <label
+              className={selectedReaction === reaction ? 'reaction-option reaction-option--selected' : 'reaction-option'}
+              htmlFor={`reaction-${reaction}`}
+              key={reaction}
+            >
+              <RadioGroupItem id={`reaction-${reaction}`} value={reaction} />
+              <span>{reactionLabels[reaction]}</span>
+            </label>
+          ))}
+        </RadioGroup>
+        <button
+          className="primary-button reaction-confirm"
+          type="button"
+          disabled={!selectedReaction}
+          onClick={confirmReaction}
+        >
+          CONFIRM
+        </button>
       </div>
     </section>
   )
 }
 
 function RevealPost({ variant, answer, number }: { variant: PostVariant; answer: Reaction; number: number }) {
+  const highlightedHeadline = variant.headlineHighlight
+    ? (() => {
+        const start = variant.headline.indexOf(variant.headlineHighlight)
+
+        if (start === -1) return variant.headline
+
+        const end = start + variant.headlineHighlight.length
+        return (
+          <>
+            {variant.headline.slice(0, start)}
+            <mark>{variant.headline.slice(start, end)}</mark>
+            {variant.headline.slice(end)}
+          </>
+        )
+      })()
+    : variant.headline
+
   return (
     <div className="reveal-post">
       <div className="reveal-post__author">
         <img src={variant.image} alt={variant.alt} />
         <div>
           <span>Post {number}</span>
-          <strong><mark>{variant.identity}</mark></strong>
+          <strong>{variant.headlineHighlight ? variant.identity : <mark>{variant.identity}</mark>}</strong>
         </div>
       </div>
-      <p><mark>{variant.kicker}</mark> {variant.headline}</p>
+      <p><strong>{variant.kicker}</strong> {highlightedHeadline}</p>
       <span className="answer-chip"><Check size={16} weight="bold" /> Sagot mo: {reactionLabels[answer]}</span>
     </div>
   )
@@ -791,10 +840,12 @@ function App() {
         />
       )}
       {step === 'posts' && (
-        <div className="post-flow screen-enter">
-          <PoliticalPost pair={activePair} variant={activeVariant} />
-          <ReactionPanel number={postIndex + 1} total={route.length} onChoose={chooseReaction} />
-        </div>
+        <>
+          <div className="post-flow screen-enter">
+            <PoliticalPost pair={activePair} variant={activeVariant} />
+          </div>
+          <ReactionPanel key={postIndex} number={postIndex + 1} total={route.length} onChoose={chooseReaction} />
+        </>
       )}
     </FeedShell>
   )
