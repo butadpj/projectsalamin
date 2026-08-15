@@ -6,57 +6,54 @@ The project can take the form of interactive challenges, social content, creator
 
 ## The interactive experience
 
-This repository contains one Project SALAMIN activation: a one-minute political-post challenge. Participants react to two posts, then see how the person or group in an image may affect their judgment of the same claim.
+This repository contains one Project SALAMIN activation: a short political-post challenge. Participants react to four posts across two issues, then compare how they judged each political side.
 
 The app uses a Facebook-inspired interface because many Filipinos encounter political news through Facebook. It does not connect to Facebook, ask for a Facebook login, or post anything to a participant's account.
 
 ### Participant flow
 
 1. The participant enters a quick reaction check.
-2. One setup question helps the app choose a relevant political pair.
-3. The app shows the post that matches the participant's answer first.
-4. The participant locks in a reaction.
-5. The app shows the same claim using an opposing or neutral image.
-6. After the second reaction, Project SALAMIN reveals the comparison.
-7. The participant reflects on both answers and learns the SALAMIN Check.
-8. The app asks for permission before saving the anonymous response.
+2. The participant chooses whether Leni Robredo or Sara Duterte is closer to their current view.
+3. The app shows the presidential and flood-control posts aligned with that side first.
+4. The participant locks in a reaction to each post.
+5. The app shows the presidential and flood-control posts aligned with the opposing side.
+6. Project SALAMIN reveals the two comparisons after the fourth reaction.
+7. On that same screen, the participant reflects on all four answers.
+8. Inside the mock Facebook feed, the participant completes three SALAMIN CHECK actions directly on the aligned post. Each action shows a finding and locks after completion.
+9. The app asks for permission before saving the anonymous response.
 
-We delay the full purpose of the activity until both reactions are complete. This helps us capture a gut reaction without hiding the fictional nature of the posts or taking data without permission.
+We delay the full purpose of the activity until all four reactions are complete. This helps us capture a gut reaction without hiding the fictional nature of the posts or taking data without permission.
 
 ### SALAMIN Check
 
-Before believing or sharing a political claim, ask:
+Before believing or sharing a political claim, the participant practices these checks:
 
-1. Sino ang original source?
-2. Ano ang patunay?
-3. May kulang bang context?
-4. Pareho ba ang tanong ko kung ibang panig ang nag-post?
+1. Tingnan ang profile.
+2. Basahin ang comments.
+3. Hanapin ang link o dokumento.
+
+The exercise also reminds participants not to rely on one post. They should search for the claim and compare it with other trustworthy sources.
 
 ### Current post pairs
 
-The app currently includes four image pairs:
+The app currently combines two issue pairs:
 
-- Bongbong Marcos and Leni Robredo
-- Leni Robredo and Sara Duterte
-- INC-aligned and non-aligned public gatherings
-- Neutral and BBM-linked flood-control coverage
+- Leni Robredo and Sara Duterte using the same presidential-candidacy claim
+- Marcos administration blamed for continuing flood-control failures
+- Duterte-allied senators blamed for continuing flood-control failures
 
-Each pair uses the same page name, caption, headline, engagement counts, and Facebook-style layout. The image provides the political cue. Names appear only during the reveal.
+Every version uses the same page name, engagement counts, and Facebook-style layout. Each issue keeps its own comparison controlled.
 
 Post assets live in [`assets/posts-2-sides`](assets/posts-2-sides).
 
 ### Routing
 
-The setup question asks which option feels closest to the participant's current political position. The answer selects a pair and decides which image appears first:
+The setup asks which side feels closer to the participant's current political position. The app shows both posts aligned with that side before both opposing posts:
 
-| Answer | Pair | First image |
+| Answer | Posts 1-2 | Posts 3-4 |
 | --- | --- | --- |
-| Bongbong Marcos | BBM vs Leni | BBM |
-| Leni Robredo | BBM vs Leni or Leni vs Sara | Leni |
-| Sara Duterte | Leni vs Sara | Sara |
-| Religious-group endorsements | INC vs neutral | INC-aligned |
-| Independent | Neutral vs BBM flood control | Neutral |
-| Secret muna | Random pair | Random order |
+| Leni Robredo | Leni candidacy, Duterte-allied senators blamed | Sara candidacy, Marcos administration blamed |
+| Sara Duterte | Sara candidacy, Marcos administration blamed | Leni candidacy, Duterte-allied senators blamed |
 
 ### Data and consent
 
@@ -64,10 +61,9 @@ The current demo has no server or database. It keeps answers in memory until the
 
 If the participant agrees, the app stores this information in the browser under `salamin-responses`:
 
-- Routing answer
-- Selected post pair
-- Post order
-- Two reactions
+- Selected side
+- Post order across both issue pairs
+- Four reactions
 - Reflection answer
 - Completion time
 
@@ -125,10 +121,10 @@ brainstorm.md
 
 1. Add two images under `assets/posts-2-sides/<pair-name>/`.
 2. Import both images in `src/App.tsx`.
-3. Add the pair to `postPairs` with one shared caption and headline.
+3. Add the pair to `postPairs` with one shared issue caption and two blame frames.
 4. Add a routing rule for the new participant profile.
-5. Check that both versions use the same crop, text, metadata, and engagement counts.
-6. Keep names and political labels out of the pre-reveal caption and headline.
+5. Keep the page, caption, metadata, and engagement counts consistent across both frames.
+6. Change only the blame target, headline, and image needed for the comparison.
 
 Use documented or fictional claims. Do not attach a fabricated factual claim to a real person in a public post. Screenshots can leave the app and circulate without the reveal.
 

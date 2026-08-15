@@ -1,59 +1,66 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Bell,
   CaretLeft,
+  CaretRight,
   ChatCircle,
   Check,
+  CheckCircle,
   DotsThree,
   House,
   List,
+  LinkSimple,
   MagnifyingGlass,
   MessengerLogo,
   ShareFat,
   ThumbsUp,
+  UserCircle,
   Users,
   VideoCamera,
 } from '@phosphor-icons/react'
 import salaminLogo from '../assets/logo-white-bg-transparent.png'
-import bbmImage from '../assets/posts-2-sides/bbm-vs-leni/Project SALAMIN - Brand & Post Assets (6).png'
-import leniBbmImage from '../assets/posts-2-sides/bbm-vs-leni/Project SALAMIN - Brand & Post Assets (7).png'
-import leniSaraImage from '../assets/posts-2-sides/leni-vs-sara/Project SALAMIN - Brand & Post Assets (2).png'
-import saraImage from '../assets/posts-2-sides/leni-vs-sara/Project SALAMIN - Brand & Post Assets (3).png'
-import incImage from '../assets/posts-2-sides/inc-vs-neutral/Project SALAMIN - Brand & Post Assets (4).png'
-import civicImage from '../assets/posts-2-sides/inc-vs-neutral/Project SALAMIN - Brand & Post Assets (5).png'
-import neutralFloodImage from '../assets/posts-2-sides/neutral-fc-vs-bbm-fc/Project SALAMIN - Brand & Post Assets (8).png'
+import leniCandidacyImage from '../assets/posts-2-sides/leni-vs-sara/Project SALAMIN - Brand & Post Assets (2).png'
+import saraCandidacyImage from '../assets/posts-2-sides/leni-vs-sara/Project SALAMIN - Brand & Post Assets (3).png'
+import saraFloodImage from '../assets/posts-2-sides/neutral-fc-vs-bbm-fc/Project SALAMIN - Brand & Post Assets (8).png'
 import bbmFloodImage from '../assets/posts-2-sides/neutral-fc-vs-bbm-fc/Project SALAMIN - Brand & Post Assets (9).png'
 import './App.css'
 
-type Affinity = 'bbm' | 'leni' | 'sara' | 'religious' | 'independent' | 'private'
+type Affinity = 'leni' | 'sara'
 type Reaction = 'believe' | 'check' | 'share' | 'doubt'
 type Reflection = 'more-belief' | 'more-doubt' | 'same' | 'unsure'
 type Step =
   | 'intro'
-  | 'profile'
-  | 'post-one'
-  | 'post-two'
+  | 'side'
+  | 'posts'
   | 'reveal'
-  | 'reflection'
   | 'lesson'
   | 'consent'
   | 'done'
 
-type PairId = 'bbm-leni' | 'leni-sara' | 'inc-neutral' | 'neutral-bbm-flood'
-type VariantId = 'bbm' | 'leni-bbm' | 'leni-sara' | 'sara' | 'inc' | 'civic' | 'neutral-flood' | 'bbm-flood'
+type CheckAction = 'profile' | 'comments' | 'links'
+
+type PairId = 'presidential-candidacy' | 'flood-control'
+type VariantId = 'leni-candidacy' | 'sara-candidacy' | 'leni-frame' | 'dds-frame'
+
+type FeedPost = {
+  pairId: PairId
+  variantId: VariantId
+}
 
 type PostVariant = {
   id: VariantId
   identity: string
   image: string
   alt: string
+  kicker: string
+  headline: string
 }
 
 type PostPair = {
   id: PairId
+  title: string
   caption: string
-  kicker: string
-  headline: string
+  revealNote: string
   variants: [PostVariant, PostVariant]
 }
 
@@ -65,53 +72,57 @@ const reactionLabels: Record<Reaction, string> = {
 }
 
 const affinityLabels: Record<Affinity, string> = {
-  bbm: 'Bongbong Marcos',
   leni: 'Leni Robredo',
   sara: 'Sara Duterte',
-  religious: 'Religious-group endorsements',
-  independent: 'Independent / walang sinusundang side',
-  private: 'Secret muna',
 }
 
 const postPairs: Record<PairId, PostPair> = {
-  'bbm-leni': {
-    id: 'bbm-leni',
+  'presidential-candidacy': {
+    id: 'presidential-candidacy',
+    title: 'Presidential candidacy',
     caption: 'Malaking pangako para sa susunod na administrasyon. Posible kaya?',
-    kicker: 'ONE YEAR LANG?',
-    headline: 'Presidential candidate vows to end the economic crisis within the first year in office.',
+    revealNote: 'Pareho ang claim. Kandidato lang ang pinalitan.',
     variants: [
-      { id: 'bbm', identity: 'Bongbong Marcos', image: bbmImage, alt: 'Presidential candidate greeting a crowd of supporters' },
-      { id: 'leni-bbm', identity: 'Leni Robredo', image: leniBbmImage, alt: 'Presidential candidate greeting supporters during a rally' },
+      {
+        id: 'leni-candidacy',
+        identity: 'Leni Robredo',
+        image: leniCandidacyImage,
+        alt: 'Leni Robredo speaking in front of news microphones',
+        kicker: 'ONE YEAR LANG?',
+        headline: 'Presidential candidate vows to end the economic crisis within the first year in office.',
+      },
+      {
+        id: 'sara-candidacy',
+        identity: 'Sara Duterte',
+        image: saraCandidacyImage,
+        alt: 'Sara Duterte waving outdoors',
+        kicker: 'ONE YEAR LANG?',
+        headline: 'Presidential candidate vows to end the economic crisis within the first year in office.',
+      },
     ],
   },
-  'leni-sara': {
-    id: 'leni-sara',
-    caption: 'Malaking pangako para sa susunod na administrasyon. Posible kaya?',
-    kicker: 'ONE YEAR LANG?',
-    headline: 'Presidential candidate vows to end the economic crisis within the first year in office.',
+  'flood-control': {
+    id: 'flood-control',
+    title: 'Flood control',
+    caption: 'Bilyon ang budget pero baha pa rin. Sino ang dapat managot?',
+    revealNote: 'Pareho ang problema. Kampong sinisi ang pinalitan.',
     variants: [
-      { id: 'leni-sara', identity: 'Leni Robredo', image: leniSaraImage, alt: 'Presidential candidate speaking in front of news microphones' },
-      { id: 'sara', identity: 'Sara Duterte', image: saraImage, alt: 'Presidential candidate waving outdoors' },
-    ],
-  },
-  'inc-neutral': {
-    id: 'inc-neutral',
-    caption: 'Malaking pwersa raw sa susunod na halalan. Gaano kalaki ang epekto nito?',
-    kicker: 'ONE MILLION VOTES?',
-    headline: 'Political group claims it can influence the outcome of the next national election.',
-    variants: [
-      { id: 'inc', identity: 'INC-aligned crowd', image: incImage, alt: 'Large political gathering filling a major road' },
-      { id: 'civic', identity: 'Non-aligned civic group', image: civicImage, alt: 'Civic group holding signs during a public demonstration' },
-    ],
-  },
-  'neutral-bbm-flood': {
-    id: 'neutral-bbm-flood',
-    caption: 'May bagong pangako para sa flood control. Posible kaya sa loob ng isang taon?',
-    kicker: 'FLOOD-FREE IN ONE YEAR?',
-    headline: 'Government team vows to solve major flood-control problems nationwide.',
-    variants: [
-      { id: 'neutral-flood', identity: 'Neutral flood-control coverage', image: neutralFloodImage, alt: 'Officials inspecting a waterway and flood-control site' },
-      { id: 'bbm-flood', identity: 'BBM-linked flood-control coverage', image: bbmFloodImage, alt: 'Public official inspecting a flood-control site' },
+      {
+        id: 'leni-frame',
+        identity: 'Leni-aligned framing',
+        image: saraFloodImage,
+        alt: 'Sara Duterte and officials inspecting a waterway',
+        kicker: 'DUTERTE-ALLIED SENATORS, SINISI',
+        headline: 'Duterte-allied senators blamed for the country’s continuing flood-control failures.',
+      },
+      {
+        id: 'dds-frame',
+        identity: 'DDS-aligned framing',
+        image: bbmFloodImage,
+        alt: 'Ferdinand Marcos Jr. inspecting a flood-control site',
+        kicker: 'BBM ADMIN, SINISI',
+        headline: 'Marcos administration blamed for the country’s continuing flood-control failures.',
+      },
     ],
   },
 }
@@ -203,9 +214,9 @@ function IntroCard({ onStart }: { onStart: () => void }) {
       <article className="feed-card intro-card">
         <div className="intro-card__mark">?</div>
         <p className="intro-card__kicker">Quick reaction check</p>
-        <h1>May dalawang post sa feed mo.</h1>
+        <h1>May apat na post sa feed mo.</h1>
         <p className="intro-card__body">
-          Sagutin mo base sa una mong reaction. Wala pang isang minuto.
+          Sagutin mo base sa una mong reaction. Wala pang dalawang minuto.
         </p>
         <button className="primary-button" type="button" onClick={onStart}>Game</button>
         <p className="intro-card__note">
@@ -216,8 +227,7 @@ function IntroCard({ onStart }: { onStart: () => void }) {
   )
 }
 
-function ProfilePicker({ onPick }: { onPick: (affinity: Affinity) => void }) {
-  const choices: Affinity[] = ['bbm', 'leni', 'sara', 'religious', 'independent', 'private']
+function SetupCard({ children }: { children: React.ReactNode }) {
   return (
     <article className="feed-card question-card">
       <div className="post-author">
@@ -225,19 +235,36 @@ function ProfilePicker({ onPick }: { onPick: (affinity: Affinity) => void }) {
         <div><strong>Quick check</strong><span>Only you can see this</span></div>
         <DotsThree size={24} aria-hidden="true" />
       </div>
-      <div className="question-card__content">
+      {children}
+    </article>
+  )
+}
+
+function SidePicker({ onPick }: { onPick: (affinity: Affinity) => void }) {
+  const choices: Affinity[] = ['leni', 'sara']
+
+  return (
+    <SetupCard>
+      <div className="question-card__content setup-screen">
         <p className="question-count">Quick setup</p>
-        <h1>Sa usapang politika, alin ang pinakamalapit sa iyo ngayon?</h1>
-        <p>Piliin ang pinakamalapit. Puwede ring hindi sabihin.</p>
-        <div className="choice-grid choice-grid--profile">
+        <h1>Aling panig ang mas malapit sa iyo?</h1>
+        <p>Piliin ang mas malapit sa pananaw mo ngayon.</p>
+        <div className="side-choices">
           {choices.map((choice) => (
             <button key={choice} type="button" onClick={() => onPick(choice)}>
-              {affinityLabels[choice]}
+              <span className="side-choice__initials" aria-hidden="true">
+                {choice === 'leni' ? 'LR' : 'SD'}
+              </span>
+              <span>
+                <small>Mas malapit ako kay</small>
+                <strong>{affinityLabels[choice]}</strong>
+              </span>
+              <CaretRight size={26} weight="bold" aria-hidden="true" />
             </button>
           ))}
         </div>
       </div>
-    </article>
+    </SetupCard>
   )
 }
 
@@ -256,8 +283,8 @@ function PoliticalPost({ pair, variant }: { pair: PostPair; variant: PostVariant
       <div className="news-visual">
         <img src={variant.image} alt={variant.alt} />
         <div className="news-visual__headline">
-          <span>{pair.kicker}</span>
-          <strong>{pair.headline}</strong>
+          <span>{variant.kicker}</span>
+          <strong>{variant.headline}</strong>
         </div>
       </div>
       <div className="engagement-counts">
@@ -275,15 +302,17 @@ function PoliticalPost({ pair, variant }: { pair: PostPair; variant: PostVariant
 
 function ReactionPanel({
   number,
+  total,
   onChoose,
 }: {
-  number: 1 | 2
+  number: number
+  total: number
   onChoose: (reaction: Reaction) => void
 }) {
   const reactions: Reaction[] = ['believe', 'check', 'share', 'doubt']
   return (
     <section className="reaction-panel" aria-labelledby="reaction-title">
-      <p>{number === 1 ? 'Lumabas ito sa feed mo.' : 'May isa pang post.'}</p>
+      <p>Post {number} sa {total}. {number === 1 ? 'Lumabas ito sa feed mo.' : 'May isa pang post.'}</p>
       <h2 id="reaction-title">Ano ang una mong reaction?</h2>
       <div className="choice-grid">
         {reactions.map((reaction) => (
@@ -296,114 +325,263 @@ function ReactionPanel({
   )
 }
 
-function RevealPost({ pair, variant, answer }: { pair: PostPair; variant: PostVariant; answer: Reaction }) {
+function RevealPost({ variant, answer, number }: { variant: PostVariant; answer: Reaction; number: number }) {
   return (
     <div className="reveal-post">
       <div className="reveal-post__author">
         <img src={variant.image} alt={variant.alt} />
-        <strong>{variant.identity}</strong>
+        <div>
+          <span>Post {number}</span>
+          <strong><mark>{variant.identity}</mark></strong>
+        </div>
       </div>
-      <p><mark>{pair.kicker}</mark> {pair.headline}</p>
-      <span className="answer-chip"><Check size={16} weight="bold" /> {reactionLabels[answer]}</span>
+      <p><mark>{variant.kicker}</mark> {variant.headline}</p>
+      <span className="answer-chip"><Check size={16} weight="bold" /> Sagot mo: {reactionLabels[answer]}</span>
     </div>
   )
 }
 
 function RevealScreen({
-  pair,
-  order,
+  posts,
   answers,
-  onContinue,
+  onChoose,
 }: {
-  pair: PostPair
-  order: VariantId[]
+  posts: FeedPost[]
   answers: Reaction[]
-  onContinue: () => void
+  onChoose: (reflection: Reflection) => void
 }) {
+  const comparisons = (Object.keys(postPairs) as PairId[]).map((pairId) => ({
+    pair: postPairs[pairId],
+    entries: posts
+      .map((post, index) => ({ post, index }))
+      .filter(({ post }) => post.pairId === pairId),
+  }))
+
   return (
     <div className="reveal-screen screen-enter">
       <header className="reveal-header">
         <img src={salaminLogo} alt="Project Salamin" />
       </header>
       <main className="reveal-content">
-        <p className="reveal-kicker">May hindi kami sinabi sa simula.</p>
-        <h1>Pareho ang claim.</h1>
+        <p className="reveal-kicker">Ito ang hindi namin sinabi sa simula</p>
+        <h1>Inuna namin ang panig na pinili mo.</h1>
         <p className="reveal-lead">
-          Pareho ring walang source o sapat na patunay. Ang panig lang ang pinalitan namin.
+          Nakita mo muna ang dalawang post na tugma sa pinili mong panig. Sumunod ang dalawang post mula sa kabilang panig.
         </p>
-        <div className="reveal-comparison">
-          <RevealPost pair={pair} variant={getVariant(pair, order[0])} answer={answers[0]} />
-          <RevealPost pair={pair} variant={getVariant(pair, order[1])} answer={answers[1]} />
+        <div className="reveal-issues">
+          {comparisons.map(({ pair, entries }) => (
+            <section className="reveal-issue" key={pair.id}>
+              <h2>{pair.title}</h2>
+              <p>{pair.revealNote}</p>
+              <div className="reveal-comparison">
+                {entries.map(({ post, index }) => (
+                  <RevealPost
+                    key={`${post.pairId}-${post.variantId}`}
+                    variant={getVariant(pair, post.variantId)}
+                    answer={answers[index]}
+                    number={index + 1}
+                  />
+                ))}
+              </div>
+            </section>
+          ))}
         </div>
-        <p className="reveal-explanation">
-          Sinabi namin ito pagkatapos mong sumagot para makuha ang una mong reaction.
-        </p>
-        <button className="primary-button primary-button--light" type="button" onClick={onContinue}>
-          Tingnan ang sagot ko
-        </button>
-      </main>
-    </div>
-  )
-}
-
-function ReflectionScreen({
-  answers,
-  onChoose,
-}: {
-  answers: Reaction[]
-  onChoose: (reflection: Reflection) => void
-}) {
-  const same = answers[0] === answers[1]
-  return (
-    <div className="salamin-page screen-enter">
-      <header className="salamin-header">
-        <img src={salaminLogo} alt="Project Salamin" />
-      </header>
-      <main className="salamin-content">
-        <p className="page-kicker">Balikan natin</p>
-        <h1>{same ? 'Pareho ang sagot mo.' : 'Magkaiba ang sagot mo.'}</h1>
-        <p className="page-lead">
-          {same
-            ? 'Tingnan natin kung pareho rin ang patunay na hahanapin mo.'
-            : 'Ikaw lang ang makakapagsabi kung ano ang nakaapekto sa sagot mo.'}
-        </p>
-        <fieldset className="reflection-options">
-          <legend>Ano ang napansin mo?</legend>
+        <fieldset className="reflection-options reflection-options--merged">
+          <legend>Nagbago ba ang reaction mo nang lumipat sa kabilang panig?</legend>
           <button type="button" onClick={() => onChoose('more-belief')}>Mas naniwala ako sa isang panig</button>
           <button type="button" onClick={() => onChoose('more-doubt')}>Mas nagduda ako sa isang panig</button>
           <button type="button" onClick={() => onChoose('same')}>Pareho ang naging tingin ko</button>
-          <button type="button" onClick={() => onChoose('unsure')}>Hindi ako sure</button>
+          <button type="button" onClick={() => onChoose('unsure')}>Hindi ako sigurado</button>
         </fieldset>
       </main>
     </div>
   )
 }
 
-function LessonScreen({ onContinue }: { onContinue: () => void }) {
-  const checks = [
-    ['01', 'Sino ang original source?'],
-    ['02', 'Ano ang patunay?'],
-    ['03', 'May kulang bang context?'],
-    ['04', 'Pareho ba ang tanong ko kung ibang panig ang nag-post?'],
-  ]
+function CheckPost({
+  pair,
+  variant,
+  completed,
+  onCheck,
+}: {
+  pair: PostPair
+  variant: PostVariant
+  completed: CheckAction[]
+  onCheck: (action: CheckAction) => void
+}) {
+  const isDone = (action: CheckAction) => completed.includes(action)
+
   return (
-    <div className="salamin-page screen-enter">
-      <header className="salamin-header">
-        <img src={salaminLogo} alt="Project Salamin" />
-      </header>
-      <main className="salamin-content salamin-content--lesson">
-        <p className="page-kicker">SALAMIN Check</p>
-        <h1>Bago maniwala o mag-share, apat na tanong muna.</h1>
-        <div className="check-list">
-          {checks.map(([number, label]) => (
-            <div key={number} className="check-item">
-              <span>{number}</span>
-              <strong>{label}</strong>
-            </div>
-          ))}
+    <article className="check-post" aria-label={`Post tungkol kay ${variant.identity}`}>
+      <div className="check-post__label">Pindutin ang mga bahagi ng post para magsuri</div>
+      <div className="check-post__author">
+        <button
+          className={isDone('profile') ? 'post-check-target post-check-target--profile is-done' : 'post-check-target post-check-target--profile'}
+          type="button"
+          disabled={isDone('profile')}
+          onClick={() => onCheck('profile')}
+        >
+          <span className="page-avatar page-avatar--news">BB</span>
+          <span>
+            <strong>Balitang Bayan</strong>
+            <small>Tingnan ang profile</small>
+          </span>
+          {isDone('profile') && <CheckCircle size={20} weight="fill" aria-hidden="true" />}
+        </button>
+        <DotsThree size={24} aria-hidden="true" />
+      </div>
+      <p className="check-post__caption">{pair.caption}</p>
+      <button
+        className={isDone('links') ? 'check-post__visual post-check-target is-done' : 'check-post__visual post-check-target'}
+        type="button"
+        disabled={isDone('links')}
+        onClick={() => onCheck('links')}
+        aria-label="Buksan at suriin ang link ng post"
+      >
+        <img src={variant.image} alt={variant.alt} />
+        <div>
+          <span>{variant.kicker}</span>
+          <strong>{variant.headline}</strong>
         </div>
-        <button className="primary-button primary-button--light" type="button" onClick={onContinue}>Gets ko</button>
+        <span className="post-target-hint">
+          {isDone('links') ? <><CheckCircle size={18} weight="fill" /> Link nasuri</> : 'Buksan ang link'}
+        </span>
+      </button>
+      <div className="check-post__engagement">
+        <span>1.9K reactions</span>
+        <button
+          className={isDone('comments') ? 'post-check-target post-check-target--comments is-done' : 'post-check-target post-check-target--comments'}
+          type="button"
+          disabled={isDone('comments')}
+          onClick={() => onCheck('comments')}
+        >
+          {isDone('comments') && <CheckCircle size={17} weight="fill" aria-hidden="true" />}
+          327 comments, 62 shares
+        </button>
+      </div>
+    </article>
+  )
+}
+
+function LessonScreen({ pair, variant, onContinue }: { pair: PostPair; variant: PostVariant; onContinue: () => void }) {
+  const [completed, setCompleted] = useState<CheckAction[]>([])
+  const [toast, setToast] = useState<{ title: string; description: string } | null>(null)
+
+  const checks: Array<{
+    id: CheckAction
+    label: string
+    hint: string
+    finding: string
+    icon: React.ReactNode
+  }> = [
+    {
+      id: 'profile',
+      label: 'Tingnan ang profile',
+      hint: 'Kilalanin kung sino ang nasa likod ng page.',
+      finding: 'Walang malinaw na impormasyon kung sino ang nagpapatakbo ng page.',
+      icon: <UserCircle size={28} weight="bold" aria-hidden="true" />,
+    },
+    {
+      id: 'comments',
+      label: 'Basahin ang comments',
+      hint: 'Tingnan kung may nagbigay ng totoong patunay.',
+      finding: 'May mga opinyon at reaction, pero walang ebidensiyang pinakita.',
+      icon: <ChatCircle size={27} weight="bold" aria-hidden="true" />,
+    },
+    {
+      id: 'links',
+      label: 'Hanapin ang link o dokumento',
+      hint: 'Maghanap ng report, video, o opisyal na pahayag.',
+      finding: 'Walang link sa report, buong speech, o opisyal na dokumento.',
+      icon: <LinkSimple size={27} weight="bold" aria-hidden="true" />,
+    },
+  ]
+
+  useEffect(() => {
+    if (!toast) return
+    const timer = window.setTimeout(() => setToast(null), 4200)
+    return () => window.clearTimeout(timer)
+  }, [toast])
+
+  const runCheck = (action: CheckAction) => {
+    if (completed.includes(action)) return
+    const check = checks.find((item) => item.id === action)
+    if (!check) return
+    setCompleted((current) => [...current, action])
+    setToast({ title: `${check.label}: tapos na`, description: check.finding })
+  }
+
+  const allDone = completed.length === checks.length
+
+  return (
+    <div className="facebook-app check-experience screen-enter">
+      <FacebookHeader />
+      <main className="check-facebook-layout">
+        <aside className="fb-rail fb-rail--left check-fb-nav" aria-hidden="true">
+          <div className="rail-person"><span className="profile-avatar">IK</span><strong>Ikaw</strong></div>
+          <div><Users size={27} weight="fill" /> Friends</div>
+          <div><VideoCamera size={27} weight="fill" /> Video</div>
+          <div><MessengerLogo size={27} weight="fill" /> Messenger</div>
+        </aside>
+        <section className="check-feed" aria-label="Post na susuriin">
+          <CheckPost pair={pair} variant={variant} completed={completed} onCheck={runCheck} />
+        </section>
+        <aside className="lesson-checks check-sidebar" aria-label="Mga kailangang suriin">
+          <p className="check-sidebar__kicker">SALAMIN CHECK</p>
+          <h1>Ikaw naman ang mag-check.</h1>
+          <p className="check-sidebar__lead">Sa post mismo pindutin ang profile, link, at comments.</p>
+          <div className="check-status" aria-live="polite">
+            <strong>{completed.length} sa {checks.length} nasuri</strong>
+            <span>{allDone ? 'Kumpleto na.' : 'Kahit anong ayos.'}</span>
+          </div>
+          <div className="check-actions" aria-label="SALAMIN CHECK progress">
+            {checks.map((check) => {
+              const isDone = completed.includes(check.id)
+              return (
+                <div
+                  key={check.id}
+                  className={isDone ? 'check-action check-action--done' : 'check-action'}
+                >
+                  <span className="check-action__icon">
+                    {isDone ? <CheckCircle size={25} weight="fill" aria-hidden="true" /> : check.icon}
+                  </span>
+                  <span className="check-action__copy">
+                    <strong>{check.label}</strong>
+                    <small>{isDone ? check.finding : check.hint}</small>
+                  </span>
+                  <span className="check-action__state">{isDone ? 'Tapos na' : 'Hanapin sa post'}</span>
+                </div>
+              )
+            })}
+          </div>
+          <div className="research-reminder">
+            <MagnifyingGlass size={25} weight="bold" aria-hidden="true" />
+            <div>
+              <strong>Huwag sa post lang.</strong>
+              <p>Mag-search din at ikumpara sa ibang mapagkakatiwalaang source.</p>
+            </div>
+          </div>
+          <button
+            className="primary-button lesson-continue"
+            type="button"
+            disabled={!allDone}
+            onClick={onContinue}
+          >
+            {allDone ? 'Magpatuloy' : `Tapusin pa ang ${checks.length - completed.length}`}
+          </button>
+        </aside>
       </main>
+      <div className="toast-viewport" aria-live="polite" aria-atomic="true">
+        {toast && (
+          <div className="salamin-toast" role="status" key={toast.title}>
+            <CheckCircle size={22} weight="fill" aria-hidden="true" />
+            <div>
+              <strong>{toast.title}</strong>
+              <p>{toast.description}</p>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
@@ -458,50 +636,47 @@ function App() {
   const [step, setStep] = useState<Step>('intro')
   const [affinity, setAffinity] = useState<Affinity | null>(null)
   const [answers, setAnswers] = useState<Reaction[]>([])
+  const [postIndex, setPostIndex] = useState(0)
   const [reflection, setReflection] = useState<Reflection | null>(null)
   const [kept, setKept] = useState(false)
 
-  const route = useMemo<{ pairId: PairId; order: VariantId[] }>(() => {
-    if (affinity === 'bbm') return { pairId: 'bbm-leni', order: ['bbm', 'leni-bbm'] }
-    if (affinity === 'leni') {
-      return Math.random() > 0.5
-        ? { pairId: 'bbm-leni', order: ['leni-bbm', 'bbm'] }
-        : { pairId: 'leni-sara', order: ['leni-sara', 'sara'] }
-    }
-    if (affinity === 'sara') return { pairId: 'leni-sara', order: ['sara', 'leni-sara'] }
-    if (affinity === 'religious') return { pairId: 'inc-neutral', order: ['inc', 'civic'] }
-    if (affinity === 'independent') return { pairId: 'neutral-bbm-flood', order: ['neutral-flood', 'bbm-flood'] }
-
-    const routes: { pairId: PairId; order: VariantId[] }[] = [
-      { pairId: 'bbm-leni', order: ['bbm', 'leni-bbm'] },
-      { pairId: 'leni-sara', order: ['sara', 'leni-sara'] },
-      { pairId: 'inc-neutral', order: ['inc', 'civic'] },
-      { pairId: 'neutral-bbm-flood', order: ['neutral-flood', 'bbm-flood'] },
+  const route = useMemo<FeedPost[]>(() => {
+    const leniPosts: FeedPost[] = [
+      { pairId: 'presidential-candidacy', variantId: 'leni-candidacy' },
+      { pairId: 'flood-control', variantId: 'leni-frame' },
     ]
-    const selected = routes[Math.floor(Math.random() * routes.length)]
-    return Math.random() > 0.5
-      ? selected
-      : { ...selected, order: [...selected.order].reverse() }
+    const saraPosts: FeedPost[] = [
+      { pairId: 'presidential-candidacy', variantId: 'sara-candidacy' },
+      { pairId: 'flood-control', variantId: 'dds-frame' },
+    ]
+
+    return affinity === 'sara'
+      ? [...saraPosts, ...leniPosts]
+      : [...leniPosts, ...saraPosts]
   }, [affinity])
 
-  const activePair = postPairs[route.pairId]
+  const activePost = route[postIndex]
+  const activePair = postPairs[activePost.pairId]
+  const activeVariant = getVariant(activePair, activePost.variantId)
 
   const restart = () => {
     setStep('intro')
     setAffinity(null)
     setAnswers([])
+    setPostIndex(0)
     setReflection(null)
     setKept(false)
   }
 
   const chooseReaction = (reaction: Reaction) => {
-    if (step === 'post-one') {
-      setAnswers([reaction])
-      setStep('post-two')
+    setAnswers((current) => [...current, reaction])
+
+    if (postIndex < route.length - 1) {
+      setPostIndex((current) => current + 1)
       window.scrollTo({ top: 0, behavior: 'smooth' })
       return
     }
-    setAnswers((current) => [...current, reaction])
+
     setStep('reveal')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -510,8 +685,7 @@ function App() {
     if (keep) {
       const response = {
         affinity,
-        pairId: route.pairId,
-        postOrder: route.order,
+        postOrder: route,
         answers,
         reflection,
         completedAt: new Date().toISOString(),
@@ -531,12 +705,9 @@ function App() {
   }
 
   if (step === 'reveal') {
-    return <RevealScreen pair={activePair} order={route.order} answers={answers} onContinue={() => setStep('reflection')} />
-  }
-
-  if (step === 'reflection') {
     return (
-      <ReflectionScreen
+      <RevealScreen
+        posts={route}
         answers={answers}
         onChoose={(value) => {
           setReflection(value)
@@ -546,7 +717,18 @@ function App() {
     )
   }
 
-  if (step === 'lesson') return <LessonScreen onContinue={() => setStep('consent')} />
+  if (step === 'lesson') {
+    const lessonPost = route[0]
+    const lessonPair = postPairs[lessonPost.pairId]
+
+    return (
+      <LessonScreen
+        pair={lessonPair}
+        variant={getVariant(lessonPair, lessonPost.variantId)}
+        onContinue={() => setStep('consent')}
+      />
+    )
+  }
 
   if (step === 'consent') {
     return <ConsentScreen onAnswer={finishConsent} />
@@ -556,22 +738,20 @@ function App() {
 
   return (
     <FeedShell>
-      {step === 'intro' && <IntroCard onStart={() => setStep('profile')} />}
-      {step === 'profile' && (
-        <ProfilePicker
+      {step === 'intro' && <IntroCard onStart={() => setStep('side')} />}
+      {step === 'side' && (
+        <SidePicker
           onPick={(value) => {
             setAffinity(value)
-            setStep('post-one')
+            setPostIndex(0)
+            setStep('posts')
           }}
         />
       )}
-      {(step === 'post-one' || step === 'post-two') && (
+      {step === 'posts' && (
         <div className="post-flow screen-enter">
-          <PoliticalPost
-            pair={activePair}
-            variant={getVariant(activePair, step === 'post-one' ? route.order[0] : route.order[1])}
-          />
-          <ReactionPanel number={step === 'post-one' ? 1 : 2} onChoose={chooseReaction} />
+          <PoliticalPost pair={activePair} variant={activeVariant} />
+          <ReactionPanel number={postIndex + 1} total={route.length} onChoose={chooseReaction} />
         </div>
       )}
     </FeedShell>
