@@ -57,19 +57,19 @@ The setup asks which side feels closer to the participant's current political po
 
 ### Data and consent
 
-The current demo has no server or database. It keeps answers in memory until the final consent screen.
+The app keeps answers in memory until the final consent screen. Consented responses are sent to the standalone `api-projectsalamin` service and stored in Supabase Postgres.
 
-If the participant agrees, the app stores this information in the browser under `salamin-responses`:
+If the participant agrees, the app stores:
 
 - Selected side
-- Post order across both issue pairs
-- Four reactions
+- Four structured reactions, including the post variant and display position
 - Reflection answer
-- Completion time
+- Completion duration
+- Experiment version and server creation time
 
 If the participant declines, the app does not store the response. The app does not collect a name, Facebook account, email address, or device identifier.
 
-`localStorage` is suitable for the demo. A field pilot will need a secure data endpoint, a retention policy, and a way for participants to withdraw their responses.
+The frontend never receives Supabase credentials. The API validates the controlled post order, makes retries idempotent, and is the only service allowed to write to Postgres. Before the field pilot, define a retention period and withdrawal process.
 
 ## Run locally
 
@@ -82,6 +82,7 @@ Install dependencies and start Vite:
 
 ```bash
 pnpm install
+cp .env.example .env.local
 pnpm dev
 ```
 

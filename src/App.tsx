@@ -23,6 +23,7 @@ import leniCandidacyImage from '../assets/posts-2-sides/leni-vs-sara/Project SAL
 import saraCandidacyImage from '../assets/posts-2-sides/leni-vs-sara/Project SALAMIN - Brand & Post Assets (3).png'
 import saraFloodImage from '../assets/posts-2-sides/neutral-fc-vs-bbm-fc/Project SALAMIN - Brand & Post Assets (8).png'
 import bbmFloodImage from '../assets/posts-2-sides/neutral-fc-vs-bbm-fc/Project SALAMIN - Brand & Post Assets (9).png'
+import { submitSalaminResponse } from './salamin-api'
 import './App.css'
 
 type Affinity = 'leni' | 'sara'
@@ -586,7 +587,15 @@ function LessonScreen({ pair, variant, onContinue }: { pair: PostPair; variant: 
   )
 }
 
-function ConsentScreen({ onAnswer }: { onAnswer: (keep: boolean) => void }) {
+function ConsentScreen({
+  onAnswer,
+  saving,
+  error,
+}: {
+  onAnswer: (keep: boolean) => void
+  saving: boolean
+  error: string | null
+}) {
   return (
     <div className="salamin-page salamin-page--light screen-enter">
       <header className="salamin-header salamin-header--light">
@@ -597,11 +606,14 @@ function ConsentScreen({ onAnswer }: { onAnswer: (keep: boolean) => void }) {
         <p className="page-kicker">Last question</p>
         <h1>Okay lang bang isama ang sagot mo?</h1>
         <p className="page-lead">
-          Sa demo na ito, sa device mo lang mase-save ang sagot. Wala kaming kukuning pangalan o Facebook account.
+          Ise-save namin ang anonymous answers mo para sa pilot results. Wala kaming kukuning pangalan o Facebook account.
         </p>
+        {error && <p role="alert">{error}</p>}
         <div className="consent-actions">
-          <button className="primary-button" type="button" onClick={() => onAnswer(true)}>Oo, isama</button>
-          <button className="text-button" type="button" onClick={() => onAnswer(false)}>Hindi, burahin</button>
+          <button className="primary-button" type="button" disabled={saving} onClick={() => onAnswer(true)}>
+            {saving ? 'Sine-save…' : 'Oo, isama'}
+          </button>
+          <button className="text-button" type="button" disabled={saving} onClick={() => onAnswer(false)}>Hindi, burahin</button>
         </div>
       </main>
     </div>
@@ -619,7 +631,7 @@ function DoneScreen({ kept, onRestart }: { kept: boolean; onRestart: () => void 
         <h1>Kahit sino pa ang sangkot, pareho dapat ang pag-check.</h1>
         <p className="page-lead">
           {kept
-            ? 'Salamat. Sinave namin ang anonymous answers mo sa device na ito.'
+            ? 'Salamat. Kasama na ang anonymous answers mo sa pilot results.'
             : 'Hindi namin sinave ang mga sagot mo.'}
         </p>
         <div className="closing-line">
@@ -639,6 +651,10 @@ function App() {
   const [postIndex, setPostIndex] = useState(0)
   const [reflection, setReflection] = useState<Reflection | null>(null)
   const [kept, setKept] = useState(false)
+  const [startedAt, setStartedAt] = useState<number | null>(null)
+  const [submissionId, setSubmissionId] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
 
   const route = useMemo<FeedPost[]>(() => {
     const leniPosts: FeedPost[] = [
@@ -666,6 +682,10 @@ function App() {
     setPostIndex(0)
     setReflection(null)
     setKept(false)
+    setStartedAt(null)
+    setSubmissionId(null)
+    setSaving(false)
+    setSaveError(null)
   }
 
   const chooseReaction = (reaction: Reaction) => {
@@ -681,27 +701,42 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  const finishConsent = (keep: boolean) => {
-    if (keep) {
-      const response = {
-        affinity,
-        postOrder: route,
-        answers,
-        reflection,
-        completedAt: new Date().toISOString(),
-      }
-
-      try {
-        const saved = JSON.parse(localStorage.getItem('salamin-responses') ?? '[]')
-        const responses = Array.isArray(saved) ? saved : []
-        localStorage.setItem('salamin-responses', JSON.stringify([...responses, response]))
-      } catch {
-        localStorage.setItem('salamin-responses', JSON.stringify([response]))
-      }
+  const finishConsent = async (keep: boolean) => {
+    if (!keep) {
+      setKept(false)
+      setStep('done')
+      return
     }
 
-    setKept(keep)
-    setStep('done')
+    if (!affinity || !reflection || answers.length !== route.length || startedAt === null) {
+      setSaveError('Kulang ang response data. Pakisubukang ulitin ang activity.')
+      return
+    }
+
+    const currentSubmissionId = submissionId ?? crypto.randomUUID()
+    setSubmissionId(currentSubmissionId)
+    setSaving(true)
+    setSaveError(null)
+
+    try {
+      await submitSalaminResponse({
+        submissionId: currentSubmissionId,
+        affinity,
+        reactions: route.map((post, position) => ({
+          ...post,
+          position,
+          reaction: answers[position],
+        })),
+        reflection,
+        durationSeconds: Math.max(1, Math.round((Date.now() - startedAt) / 1000)),
+      })
+      setKept(true)
+      setStep('done')
+    } catch {
+      setSaveError('Hindi na-save ang sagot. Pakisubukan ulit.')
+    } finally {
+      setSaving(false)
+    }
   }
 
   if (step === 'reveal') {
@@ -731,14 +766,21 @@ function App() {
   }
 
   if (step === 'consent') {
-    return <ConsentScreen onAnswer={finishConsent} />
+    return <ConsentScreen onAnswer={finishConsent} saving={saving} error={saveError} />
   }
 
   if (step === 'done') return <DoneScreen kept={kept} onRestart={restart} />
 
   return (
     <FeedShell>
-      {step === 'intro' && <IntroCard onStart={() => setStep('side')} />}
+      {step === 'intro' && (
+        <IntroCard
+          onStart={() => {
+            setStartedAt(Date.now())
+            setStep('side')
+          }}
+        />
+      )}
       {step === 'side' && (
         <SidePicker
           onPick={(value) => {
