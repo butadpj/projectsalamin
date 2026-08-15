@@ -19,7 +19,7 @@ The app uses a Facebook-inspired interface because many Filipinos encounter poli
 5. The app shows the presidential and flood-control posts aligned with the opposing side.
 6. Project SALAMIN reveals the two comparisons after the fourth reaction.
 7. On that same screen, the participant reflects on all four answers.
-8. Inside the mock Facebook feed, the participant completes three SALAMIN CHECK actions directly on the aligned post. Each action shows a finding and locks after completion.
+8. Inside the mock Facebook feed, the participant completes three SALAMIN CHECK actions directly on the opposite-side post. Each action shows a finding and locks after completion.
 9. The app asks for permission before saving the anonymous response.
 
 We delay the full purpose of the activity until all four reactions are complete. This helps us capture a gut reaction without hiding the fictional nature of the posts or taking data without permission.

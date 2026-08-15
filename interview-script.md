@@ -8,27 +8,35 @@
 **BEFORE THE INTERVIEW STARTS:CONSENT**  
 **INT:** Pwede po ba kayo ma-imbitahan para sa mabilis na interview?  
 **INT:** Okay lang po bang kumuha ng video?  
-**INT:** May ipapakita lang po akong dalawang sample posts, then hihingi lang po ako ng opinion nyo.  
+**INT:** May ipapakita lang po akong apat na sample posts, then hihingi lang po ako ng opinion nyo.  
 **INT:** Ayos po ba kayo roon? Pwede na po ba tayo mag start?  
    
 **DIALOGUE FLOW:**  
 **Part A.**  
-**0:00 – 0:10**  
-**INT:** Pili po kayo: Team green, Team pink, wala sa dalawa or secret muna?  
+**0:00 - 0:10**  
+**INT:** Aling panig ang mas malapit sa inyo ngayon: Leni Robredo o Sara Duterte?  
 **IE:** *\*Answers\**
 
-**0:10 – 0:23 (Post 1):** *\*Shows the content (pink or green post)\**  
+**0:10 - 0:25 (Post 1):** *\*Shows the presidential-candidacy post aligned with the selected side\**  
 **INT:** Pag lumabas itong post sa feed mo. Ano ang unang maiisip mo?  
 **IE:** *\*Answers\**
 
+**0:25 - 0:40 (Post 2):** *\*Shows the flood-control post aligned with the selected side\**  
+**INT:** Paano pag itong post ang lumabas sa feed mo. Ano ang unang maiisip mo?  
+**IE:** *\*Answers\**
+
 **Part B.**  
-**0:23 – 0:38 (Post 2):** *\*Shows the content (pink or green post)\**  
+**0:40 - 0:55 (Post 3):** *\*Shows the presidential-candidacy post from the opposing side\**  
+**INT:** Paano pag itong post ang lumabas sa feed mo. Ano ang unang maiisip mo?  
+**IE:** *\*Answers\**
+
+**0:55 - 1:10 (Post 4):** *\*Shows the flood-control post from the opposing side\**  
 **INT:** Paano pag itong post ang lumabas sa feed mo. Ano ang unang maiisip mo?  
 **IE:** *\*Answers\**
 
 **Part C.**  
-**0:38 – 0:50 (Reveal):** *\*Shows both content at the same time (pink and green post)\**  
-**INT:** Ngayon na nakita mo ang dalawang content parehas. Ano sa tingin mo ang masasabi mo?  
+**1:10 - 1:30 (Reveal):** *\*Shows all four posts grouped by issue\**  
+**INT:** Inuna namin ang dalawang post na tugma sa pinili mong panig bago namin ipinakita ang kabilang panig. Ngayong nakita mo ang apat, may napansin ka ba sa mga reaction mo?  
 **IE:** *\*Answers\** *(Realization / Reflection)*
 
 **SALAMIN CHECK:REVEAL**  

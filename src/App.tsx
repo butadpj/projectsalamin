@@ -753,7 +753,7 @@ function App() {
   }
 
   if (step === 'lesson') {
-    const lessonPost = route[0]
+    const lessonPost = route[2]
     const lessonPair = postPairs[lessonPost.pairId]
 
     return (
